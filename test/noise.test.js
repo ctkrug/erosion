@@ -31,4 +31,14 @@ describe('fbm', () => {
     expect(v).toBeGreaterThanOrEqual(-1.01);
     expect(v).toBeLessThanOrEqual(1.01);
   });
+
+  it('returns a finite value instead of NaN for zero octaves', () => {
+    const n = new SimplexNoise2D(3);
+    expect(Number.isFinite(fbm(n, 0.5, 0.5, { octaves: 0 }))).toBe(true);
+  });
+
+  it('returns a finite value instead of NaN for negative octaves', () => {
+    const n = new SimplexNoise2D(3);
+    expect(Number.isFinite(fbm(n, 0.5, 0.5, { octaves: -3 }))).toBe(true);
+  });
 });
