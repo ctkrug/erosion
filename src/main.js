@@ -4,9 +4,14 @@ import { createRng } from './noise.js';
 import { buildMesh, updateMeshHeights } from './mesh.js';
 import { TerrainRenderer } from './renderer.js';
 import { NOISE_CONTROLS, EROSION_CONTROLS, defaultParams } from './controls.js';
+import { createCameraState, orbitCamera, zoomCamera, cameraEye } from './camera.js';
 
 const RESOLUTION = 128;
 const HEIGHT_SCALE = 0.6;
+const AUTO_ROTATE_SPEED = 0.08;
+const AUTO_ROTATE_IDLE_MS = 2200;
+const ORBIT_SENSITIVITY = 0.008;
+const WHEEL_ZOOM_SENSITIVITY = 0.0016;
 
 function hexToRgb(hex) {
   const value = parseInt(hex.slice(1), 16);
@@ -36,6 +41,19 @@ try {
   renderer.setMesh(mesh);
 } catch (err) {
   showUnsupportedMessage(err);
+}
+
+let cameraState = createCameraState();
+let lastInteractionAt = -Infinity;
+
+function onUserOrbit(deltaAzimuth, deltaElevation) {
+  cameraState = orbitCamera(cameraState, deltaAzimuth, deltaElevation);
+  lastInteractionAt = performance.now();
+}
+
+function onUserZoom(deltaDistance) {
+  cameraState = zoomCamera(cameraState, deltaDistance);
+  lastInteractionAt = performance.now();
 }
 
 function showUnsupportedMessage(err) {
@@ -146,6 +164,40 @@ regenerateButton.addEventListener('click', () => {
 window.addEventListener('resize', resize);
 resize();
 
+let dragPointerId = null;
+let dragLast = { x: 0, y: 0 };
+
+canvas.addEventListener('pointerdown', (event) => {
+  if (dragPointerId !== null) return;
+  dragPointerId = event.pointerId;
+  dragLast = { x: event.clientX, y: event.clientY };
+  canvas.setPointerCapture(event.pointerId);
+});
+
+canvas.addEventListener('pointermove', (event) => {
+  if (event.pointerId !== dragPointerId) return;
+  const dx = event.clientX - dragLast.x;
+  const dy = event.clientY - dragLast.y;
+  dragLast = { x: event.clientX, y: event.clientY };
+  onUserOrbit(-dx * ORBIT_SENSITIVITY, dy * ORBIT_SENSITIVITY);
+});
+
+function endDrag(event) {
+  if (event.pointerId !== dragPointerId) return;
+  dragPointerId = null;
+}
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+
+canvas.addEventListener(
+  'wheel',
+  (event) => {
+    event.preventDefault();
+    onUserZoom(event.deltaY * WHEEL_ZOOM_SENSITIVITY);
+  },
+  { passive: false }
+);
+
 function heightRange(data) {
   let min = Infinity;
   let max = -Infinity;
@@ -173,12 +225,15 @@ function frame(now) {
 
     const { min, max } = heightRange(heightmap.data);
 
+    if (dragPointerId === null && now - lastInteractionAt > AUTO_ROTATE_IDLE_MS) {
+      cameraState = orbitCamera(cameraState, AUTO_ROTATE_SPEED * deltaSeconds, 0);
+    }
+
     renderer.render({
       minHeight: min * HEIGHT_SCALE,
       maxHeight: max * HEIGHT_SCALE,
       colors: COLORS,
-      autoRotateSpeed: 0.08,
-      deltaSeconds,
+      eye: cameraEye(cameraState),
     });
   }
 

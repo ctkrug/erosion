@@ -105,7 +105,6 @@ export class TerrainRenderer {
     this.normalBuffer = gl.createBuffer();
     this.indexBuffer = gl.createBuffer();
     this.indexCount = 0;
-    this.rotation = 0;
 
     this.uniforms = {
       mvp: gl.getUniformLocation(this.program, 'uModelViewProjection'),
@@ -155,9 +154,11 @@ export class TerrainRenderer {
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, mesh.normals);
   }
 
-  render({ minHeight, maxHeight, colors, autoRotateSpeed = 0, deltaSeconds = 0 }) {
+  // `eye` is a Cartesian camera position (see camera.js:cameraEye) — the
+  // renderer no longer owns any rotation state of its own, so both the
+  // idle auto-rotate and user orbit/zoom drive it through the same path.
+  render({ minHeight, maxHeight, colors, eye }) {
     const gl = this.gl;
-    this.rotation += autoRotateSpeed * deltaSeconds;
 
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -165,7 +166,6 @@ export class TerrainRenderer {
 
     const aspect = this.canvas.width / this.canvas.height;
     const projection = perspective((45 * Math.PI) / 180, aspect, 0.1, 20);
-    const eye = [Math.sin(this.rotation) * 2.6, 1.8, Math.cos(this.rotation) * 2.6];
     const view = lookAt(eye, [0, 0, 0], [0, 1, 0]);
     const model = identity();
     const mvp = multiply(projection, multiply(view, model));
