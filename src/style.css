@@ -199,14 +199,23 @@ body {
 .console {
   background: var(--surface-1);
   border-radius: calc(var(--radius) * 2);
-  padding: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  overflow-y: auto;
   box-shadow:
     inset 0 1px 0 rgba(201, 138, 63, 0.15),
     0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.console-handle {
+  display: none;
+}
+
+.console-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-3);
+  overflow-y: auto;
 }
 
 .console-section {
@@ -374,13 +383,67 @@ body {
 @media (max-width: 860px) {
   #app {
     grid-template-columns: 1fr;
-    grid-template-rows: 60vh 1fr;
-    height: auto;
+    grid-template-rows: 1fr;
+    height: 100vh;
     min-height: 100vh;
+    padding-bottom: 0;
   }
 
+  .viewport {
+    min-height: 100%;
+  }
+
+  /* Bottom-sheet drawer: peeks at 132px, drag the handle (or tap it) to
+     expand toward 70vh without leaving the terrain viewport. */
   .console {
-    max-height: 40vh;
+    position: fixed;
+    left: var(--space-2);
+    right: var(--space-2);
+    bottom: var(--space-2);
+    height: 132px;
+    max-height: 70vh;
+    z-index: 10;
+    transition: height 220ms var(--ease-out);
+  }
+
+  .console.dragging {
+    transition: none;
+  }
+
+  .console.expanded {
+    height: 70vh;
+  }
+
+  .console-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 100%;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .console-handle::before {
+    content: '';
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(201, 138, 63, 0.4);
+  }
+
+  .console-handle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .console-body {
+    flex: 1 1 auto;
+    padding: 0 var(--space-3) var(--space-3);
   }
 }
 
@@ -389,8 +452,8 @@ body {
     font-size: 25px;
   }
 
-  .console {
-    padding: var(--space-2);
+  .console-body {
+    padding: 0 var(--space-2) var(--space-2);
     gap: var(--space-3);
   }
 }

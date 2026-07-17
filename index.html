@@ -29,6 +29,15 @@
       </button>
     </main>
     <aside class="console" id="console" aria-label="Terrain controls">
+      <button
+        class="console-handle"
+        id="console-handle"
+        type="button"
+        aria-label="Expand or collapse controls"
+        aria-expanded="false"
+        aria-controls="console-body"
+      ></button>
+      <div class="console-body" id="console-body">
       <section class="console-section" aria-labelledby="noise-heading">
         <h2 id="noise-heading">Noise</h2>
         <div id="noise-controls"></div>
@@ -40,6 +49,7 @@
       <button id="regenerate" class="btn btn-regenerate" type="button">
         Regenerate terrain
       </button>
+      </div>
     </aside>
   </div>
   <script type="module" src="./src/main.js"></script>
