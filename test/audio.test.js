@@ -95,4 +95,28 @@ describe('AudioEngine', () => {
     engine.playTrickle(0);
     expect(engine.ctx).toBeNull();
   });
+
+  it('playReset does not throw in an environment without WebAudio', () => {
+    const engine = new AudioEngine();
+    expect(() => engine.playReset()).not.toThrow();
+  });
+
+  it('playReset is a no-op while muted', () => {
+    const engine = new AudioEngine();
+    engine.setMuted(true);
+    engine.playReset();
+    expect(engine.ctx).toBeNull();
+  });
+
+  it('playConverged does not throw in an environment without WebAudio', () => {
+    const engine = new AudioEngine();
+    expect(() => engine.playConverged()).not.toThrow();
+  });
+
+  it('playConverged is a no-op while muted', () => {
+    const engine = new AudioEngine();
+    engine.setMuted(true);
+    engine.playConverged();
+    expect(engine.ctx).toBeNull();
+  });
 });
