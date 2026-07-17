@@ -5,11 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Erosion — live hydraulic terrain sculpting</title>
   <meta name="description" content="A real-time procedural terrain sculptor: layered noise carved live by a hydraulic erosion simulation, rendered in WebGL." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23171b20'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23c98a3f' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='12' fill='none' stroke='%23c98a3f' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23c98a3f'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="./src/style.css" />
 </head>
 <body>
   <div id="app">
-    <canvas id="terrain"></canvas>
+    <main class="viewport" id="viewport">
+      <canvas id="terrain" aria-label="Live 3D terrain, carved in real time by hydraulic erosion"></canvas>
+      <div class="bezel-ring" aria-hidden="true"></div>
+      <header class="masthead">
+        <h1 class="wordmark">Ero<span class="wordmark-accent">sion</span></h1>
+        <p class="status" id="status" role="status" aria-live="polite">stable</p>
+      </header>
+    </main>
+    <aside class="console" id="console" aria-label="Terrain controls">
+      <section class="console-section" aria-labelledby="noise-heading">
+        <h2 id="noise-heading">Noise</h2>
+        <div id="noise-controls"></div>
+      </section>
+      <section class="console-section" aria-labelledby="erosion-heading">
+        <h2 id="erosion-heading">Erosion</h2>
+        <div id="erosion-controls"></div>
+      </section>
+      <button id="regenerate" class="btn btn-regenerate" type="button">
+        Regenerate terrain
+      </button>
+    </aside>
   </div>
   <script type="module" src="./src/main.js"></script>
 </body>
