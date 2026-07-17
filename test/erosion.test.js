@@ -86,9 +86,13 @@ describe('erodeStep', () => {
   });
 
   it('a droplet dies early from water depletion under a fast evaporation rate', () => {
-    const { data, size } = generateHeightmap(32, { seed: 2 });
-    const rng = createRng(1);
-    const steps = erodeStep(data, size, rng, { evaporateSpeed: 0.5, maxLifetime: 30 });
+    // A droplet spawned dead-center of a bowl sees ~zero gradient and barely
+    // drifts, so it can't hit the map-edge break; only water depletion can
+    // end it before maxLifetime.
+    const size = 32;
+    const bowl = makeBowl(size);
+    const centerRng = () => 0.5;
+    const steps = erodeStep(bowl, size, centerRng, { evaporateSpeed: 0.5, maxLifetime: 30 });
     expect(steps).toBeLessThan(30);
   });
 
