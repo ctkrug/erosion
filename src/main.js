@@ -198,6 +198,70 @@ regenerateButton.addEventListener('click', () => {
 window.addEventListener('resize', resize);
 resize();
 
+// Mobile bottom-sheet drawer: drag the handle to resize between the peek
+// height and ~70vh, or tap it (a drag under 5px) to toggle between them.
+const consoleEl = document.getElementById('console');
+const consoleHandle = document.getElementById('console-handle');
+const SHEET_PEEK_HEIGHT = 132;
+const SHEET_TAP_THRESHOLD = 5;
+
+function sheetExpandedHeight() {
+  return Math.round(window.innerHeight * 0.7);
+}
+
+function setSheetExpanded(expanded) {
+  consoleEl.classList.toggle('expanded', expanded);
+  consoleHandle.setAttribute('aria-expanded', String(expanded));
+}
+
+let sheetDrag = null;
+// A pointer-driven tap/drag always ends by also firing a native 'click' on
+// the button; this flag lets the click handler skip re-toggling so pointer
+// interactions and keyboard (Enter/Space) activation don't fight.
+let suppressNextClick = false;
+
+consoleHandle.addEventListener('pointerdown', (event) => {
+  sheetDrag = { startY: event.clientY, startHeight: consoleEl.getBoundingClientRect().height };
+  consoleEl.classList.add('dragging');
+  consoleHandle.setPointerCapture(event.pointerId);
+});
+
+consoleHandle.addEventListener('pointermove', (event) => {
+  if (!sheetDrag) return;
+  const deltaY = sheetDrag.startY - event.clientY;
+  const height = Math.min(sheetExpandedHeight(), Math.max(SHEET_PEEK_HEIGHT, sheetDrag.startHeight + deltaY));
+  consoleEl.style.height = `${height}px`;
+});
+
+function endSheetDrag(event) {
+  if (!sheetDrag) return;
+  const finalHeight = consoleEl.getBoundingClientRect().height;
+  const movedBy = Math.abs(finalHeight - sheetDrag.startHeight);
+  consoleEl.classList.remove('dragging');
+  consoleEl.style.height = '';
+  sheetDrag = null;
+  suppressNextClick = true;
+
+  if (movedBy < SHEET_TAP_THRESHOLD) {
+    setSheetExpanded(!consoleEl.classList.contains('expanded'));
+  } else {
+    const threshold = (SHEET_PEEK_HEIGHT + sheetExpandedHeight()) / 2;
+    setSheetExpanded(finalHeight > threshold);
+  }
+  if (event.pointerId !== undefined) consoleHandle.releasePointerCapture(event.pointerId);
+}
+
+consoleHandle.addEventListener('pointerup', endSheetDrag);
+consoleHandle.addEventListener('pointercancel', endSheetDrag);
+
+consoleHandle.addEventListener('click', () => {
+  if (suppressNextClick) {
+    suppressNextClick = false;
+    return;
+  }
+  setSheetExpanded(!consoleEl.classList.contains('expanded'));
+});
+
 // Pointer Events unify mouse/pen/touch, so a single active pointer drives
 // orbit (works for mouse drag and one-finger touch drag alike). A second
 // simultaneous pointer switches to pinch-zoom, tracked by the change in
