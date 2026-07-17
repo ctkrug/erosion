@@ -8,8 +8,8 @@
 
 export const DEFAULT_EROSION_PARAMS = {
   inertia: 0.05,
-  sedimentCapacityFactor: 4,
-  minSlope: 0.01,
+  sedimentCapacityFactor: 3,
+  minSedimentCapacity: 0.0001,
   erodeSpeed: 0.3,
   depositSpeed: 0.3,
   evaporateSpeed: 0.02,
@@ -17,6 +17,14 @@ export const DEFAULT_EROSION_PARAMS = {
   maxLifetime: 30,
   initialWater: 1,
   initialSpeed: 1,
+  maxSpeed: 5,
+  // Hard cap on how much a single step can change one cell. Without this, a
+  // cell that's randomly eroded slightly deeper than its neighbor presents a
+  // larger local slope to the next droplet that crosses it, which erodes it
+  // deeper still — an unbounded feedback loop that blows the heightmap up to
+  // extreme values within a few hundred droplets. Capping the per-step delta
+  // breaks that feedback while still allowing visible carving over many steps.
+  maxChangePerStep: 0.015,
 };
 
 function clampIndex(v, size) {
@@ -104,20 +112,22 @@ export function erodeStep(heightmap, size, rng, params = {}) {
 
     const { height: newHeight } = heightAndGradient(heightmap, size, x, y);
     const heightDiff = newHeight - oldHeight;
-    const capacity = Math.max(-heightDiff, p.minSlope) * speed * water * p.sedimentCapacityFactor;
+    const capacity = Math.max(-heightDiff * speed * water * p.sedimentCapacityFactor, p.minSedimentCapacity);
 
     if (heightDiff > 0 || sediment > capacity) {
-      const depositAmount =
-        heightDiff > 0 ? Math.min(heightDiff, sediment) : (sediment - capacity) * p.depositSpeed;
+      const depositAmount = Math.min(
+        heightDiff > 0 ? Math.min(heightDiff, sediment) : (sediment - capacity) * p.depositSpeed,
+        p.maxChangePerStep
+      );
       sediment -= depositAmount;
       applyDelta(heightmap, size, x, y, depositAmount);
     } else {
-      const erodeAmount = Math.min((capacity - sediment) * p.erodeSpeed, -heightDiff);
+      const erodeAmount = Math.min((capacity - sediment) * p.erodeSpeed, -heightDiff, p.maxChangePerStep);
       applyDelta(heightmap, size, x, y, -erodeAmount);
       sediment += erodeAmount;
     }
 
-    speed = Math.sqrt(Math.max(0, speed * speed - heightDiff * p.gravity));
+    speed = Math.min(Math.sqrt(Math.max(0, speed * speed - heightDiff * p.gravity)), p.maxSpeed);
     water *= 1 - p.evaporateSpeed;
 
     if (water < 0.01) break;
