@@ -92,7 +92,7 @@ acceptance criteria — build implements to them, QA attacks them.
 
 ## Epic 4 — Polish, reset & ship readiness
 
-- [ ] **4.1 Reset / regenerate controls**
+- [x] **4.1 Reset / regenerate controls**
   - A "regenerate terrain" action reseeds noise and clears erosion state
     back to a fresh heightmap.
   - The reset action's affordance uses the rust-red danger token from
