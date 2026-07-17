@@ -33,7 +33,7 @@ running live on the GPU/CPU in front of you.
 npm install
 npm run dev      # local dev server
 npm run build    # static build in dist/, relative-path assets
-npm test         # vitest — noise, erosion, mesh, mat4, and control specs
+npm test         # vitest — noise, erosion, mesh, mat4, camera, audio, convergence, control specs
 ```
 
 ## Built so far
@@ -45,15 +45,20 @@ npm test         # vitest — noise, erosion, mesh, mat4, and control specs
   strength slider — droplets run every animation frame the strength is above 0.
 - Real-time WebGL2 rendering of the heightmap as a shaded 3D mesh with per-vertex
   normals and an elevation/slope color ramp (water, rock, snowcap).
+- Mouse-drag and touch-drag camera orbit, scroll-wheel and pinch zoom, with a
+  slow auto-rotate that resumes after a couple of seconds of no input.
+- A status readout that tracks the simulation's actual state — "stable,"
+  "eroding…," or "converged" once the terrain settles — plus a contour-ring
+  flourish that pulses from the viewport bezel when erosion engages.
+- Synthesized WebAudio SFX (a rate-throttled trickle tick during active
+  erosion) with a mute toggle that persists across reloads.
 - The brass/slate control console from [`docs/DESIGN.md`](docs/DESIGN.md), with
-  themed sliders, a status readout, and a contour-ring flourish.
+  themed sliders and a drag-handle bottom sheet on phone.
 
 ## Not yet built
 
-- Mouse/touch camera orbit and zoom (the camera currently auto-rotates slowly).
-- Synth WebAudio SFX and a mute toggle.
-- The bottom-sheet drawer control layout on phone (controls currently stack
-  below the viewport instead).
+- A cross-check pass of `docs/DESIGN.md` against the shipped UI for any
+  remaining discrepancies (story 4.3).
 
 ## Stack
 
