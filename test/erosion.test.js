@@ -85,6 +85,14 @@ describe('erodeStep', () => {
     }
   });
 
+  it('leaves a perfectly flat heightmap untouched (zero gradient, nowhere to flow)', () => {
+    const size = 16;
+    const flat = new Float32Array(size * size).fill(0.5);
+    const rng = createRng(3);
+    for (let i = 0; i < 50; i++) erodeStep(flat, size, rng);
+    for (const v of flat) expect(v).toBe(0.5);
+  });
+
   it('is deterministic for a given seed', () => {
     const a = generateHeightmap(32, { seed: 8 });
     const b = generateHeightmap(32, { seed: 8 });
