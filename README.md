@@ -5,6 +5,8 @@ heightmap; an actual hydraulic erosion simulation — thousands of simulated wat
 droplets carrying and depositing sediment — carves it into valleys and ridgelines
 live, in WebGL, as you drag a slider.
 
+![Erosion carving a WebGL2 terrain mesh live](docs/screenshot.png)
+
 This isn't a noise-texture demo. The terrain you see genuinely erodes: droplets
 spawn on the heightmap, flow downhill under a simplified physical model, pick up
 sediment where they accelerate, and deposit it where they slow down. Run enough
@@ -25,17 +27,33 @@ and watch it visibly self-organize into river valleys and ridgelines within a
 couple of seconds — no page reload, no precomputed animation, just the simulation
 running live on the GPU/CPU in front of you.
 
-## Planned features
+## Running it
+
+```
+npm install
+npm run dev      # local dev server
+npm run build    # static build in dist/, relative-path assets
+npm test         # vitest — noise, erosion, mesh, mat4, and control specs
+```
+
+## Built so far
 
 - Layered Perlin/Simplex noise heightmap generation (seed, octaves, frequency,
-  lacunarity, persistence all tunable).
+  lacunarity, persistence all live-tunable).
 - Droplet-based hydraulic erosion simulation (position, velocity, water volume,
-  sediment capacity, deposition/erosion per step) driven live by slider input.
-- Real-time WebGL rendering of the heightmap as a shaded 3D mesh, with camera
-  orbit/zoom.
-- Live parameter controls: noise seed/octaves, erosion strength, droplet count,
-  erosion iterations per frame, brush/rain intensity.
-- Color ramps that respond to elevation and slope (water line, rock, snowcap).
+  sediment capacity, deposition/erosion per step), driven live by the erosion-
+  strength slider — droplets run every animation frame the strength is above 0.
+- Real-time WebGL2 rendering of the heightmap as a shaded 3D mesh with per-vertex
+  normals and an elevation/slope color ramp (water, rock, snowcap).
+- The brass/slate control console from [`docs/DESIGN.md`](docs/DESIGN.md), with
+  themed sliders, a status readout, and a contour-ring flourish.
+
+## Not yet built
+
+- Mouse/touch camera orbit and zoom (the camera currently auto-rotates slowly).
+- Synth WebAudio SFX and a mute toggle.
+- The bottom-sheet drawer control layout on phone (controls currently stack
+  below the viewport instead).
 
 ## Stack
 
