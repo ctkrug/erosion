@@ -64,7 +64,7 @@ acceptance criteria — build implements to them, QA attacks them.
 
 ## Epic 3 — Interaction, feedback & sound
 
-- [ ] **3.1 Brass control console with live readouts**
+- [x] **3.1 Brass control console with live readouts**
   - Every slider displays its current numeric value live next to the
     control as it's dragged.
   - The console collapses to the bottom-sheet drawer layout at 390px width
