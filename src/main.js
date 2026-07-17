@@ -164,30 +164,47 @@ regenerateButton.addEventListener('click', () => {
 window.addEventListener('resize', resize);
 resize();
 
-let dragPointerId = null;
-let dragLast = { x: 0, y: 0 };
+// Pointer Events unify mouse/pen/touch, so a single active pointer drives
+// orbit (works for mouse drag and one-finger touch drag alike). A second
+// simultaneous pointer switches to pinch-zoom, tracked by the change in
+// distance between the two touch points.
+const activePointers = new Map();
+const PINCH_ZOOM_SENSITIVITY = 0.012;
+
+function pinchDistance() {
+  const points = [...activePointers.values()];
+  return Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+}
 
 canvas.addEventListener('pointerdown', (event) => {
-  if (dragPointerId !== null) return;
-  dragPointerId = event.pointerId;
-  dragLast = { x: event.clientX, y: event.clientY };
+  activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   canvas.setPointerCapture(event.pointerId);
 });
 
 canvas.addEventListener('pointermove', (event) => {
-  if (event.pointerId !== dragPointerId) return;
-  const dx = event.clientX - dragLast.x;
-  const dy = event.clientY - dragLast.y;
-  dragLast = { x: event.clientX, y: event.clientY };
+  if (!activePointers.has(event.pointerId)) return;
+  const previous = activePointers.get(event.pointerId);
+
+  if (activePointers.size >= 2) {
+    const distanceBefore = pinchDistance();
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const distanceAfter = pinchDistance();
+    onUserZoom(-(distanceAfter - distanceBefore) * PINCH_ZOOM_SENSITIVITY);
+    return;
+  }
+
+  const dx = event.clientX - previous.x;
+  const dy = event.clientY - previous.y;
+  activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
   onUserOrbit(-dx * ORBIT_SENSITIVITY, dy * ORBIT_SENSITIVITY);
 });
 
 function endDrag(event) {
-  if (event.pointerId !== dragPointerId) return;
-  dragPointerId = null;
+  activePointers.delete(event.pointerId);
 }
 canvas.addEventListener('pointerup', endDrag);
 canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('pointerleave', endDrag);
 
 canvas.addEventListener(
   'wheel',
@@ -225,7 +242,7 @@ function frame(now) {
 
     const { min, max } = heightRange(heightmap.data);
 
-    if (dragPointerId === null && now - lastInteractionAt > AUTO_ROTATE_IDLE_MS) {
+    if (activePointers.size === 0 && now - lastInteractionAt > AUTO_ROTATE_IDLE_MS) {
       cameraState = orbitCamera(cameraState, AUTO_ROTATE_SPEED * deltaSeconds, 0);
     }
 
