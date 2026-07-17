@@ -57,10 +57,10 @@ a live numeric readout in brass.
 - **1440×900 desktop:** viewport takes the left ~70%, control console a fixed
   ~380px panel on the right, full height, scrollable if needed. Wordmark +
   status readout ("stable" / "eroding…") sits atop the console.
-- **390×844 phone:** console collapses to a bottom sheet (peek height ~120px,
-  drag handle to expand) below the full-width, ~60vh viewport — the terrain
-  stays primary, controls become a secondary drawer rather than stacking
-  above the fold.
+- **390×844 phone:** console collapses to a bottom sheet (peek height ~130px,
+  drag handle to expand toward 70vh) floating over the full-height viewport —
+  the terrain stays primary, controls become a secondary drawer rather than
+  stacking above the fold.
 
 ## 4. Signature detail
 
@@ -78,12 +78,14 @@ instrument reading a landscape," not a generic 3D viewer.
   flourish (see above) pulses once from the viewport bezel; a status label
   transitions "stable" → "eroding…" with a soft crossfade.
 - **Convergence**: when the simulation settles (delta height below threshold
-  for N frames), the status label crossfades to "stable" and the contour
-  rings pulse once in the success moss-green.
-- **Sound**: WebAudio-synthesized, subtle, rate-throttled — a soft granular
-  "trickle" tick (short filtered noise burst) on each batch of droplets
-  processed, a low soft thud when a reset/regenerate fires, and a gentle rising
-  tone on convergence. All behind a mute toggle (brass speaker glyph) persisted
+  for N frames), the status label switches to its own "converged" state
+  (not back to "stable" — strength is still above zero, it's just no longer
+  visibly carving) in the success moss-green, and the contour rings pulse
+  once in that same color.
+- **Sound**: WebAudio-synthesized, subtle, rate-throttled — a short sine
+  "trickle" tick on each batch of droplets processed, a low soft thud when a
+  reset/regenerate fires, and a gentle two-note rising tone on convergence.
+  All behind a mute toggle (icon button, top-right of the viewport) persisted
   to `localStorage`; `AudioContext` created lazily on first user gesture and
   guarded for environments without WebAudio (tests, headless).
 - Respects `prefers-reduced-motion`: disables the contour-ring pulse and
