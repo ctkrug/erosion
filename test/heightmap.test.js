@@ -23,4 +23,9 @@ describe('generateHeightmap', () => {
     const b = generateHeightmap(16, { seed: 9 });
     expect(Array.from(a.data)).toEqual(Array.from(b.data));
   });
+
+  it('degrades to a finite flat field instead of NaN for zero octaves', () => {
+    const { data } = generateHeightmap(8, { octaves: 0 });
+    for (const v of data) expect(Number.isFinite(v)).toBe(true);
+  });
 });

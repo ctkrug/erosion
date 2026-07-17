@@ -106,5 +106,5 @@ export function fbm(noise, x, y, { octaves = 4, frequency = 1, lacunarity = 2, p
     amplitude *= persistence;
     freq *= lacunarity;
   }
-  return sum / max;
+  return max > 0 ? sum / max : 0;
 }
