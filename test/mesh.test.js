@@ -90,4 +90,18 @@ describe('buildMesh', () => {
     expect(mesh.indices.length).toBe(0);
     expect(Number.isFinite(mesh.positions[0])).toBe(true);
   });
+
+  it('widens the index buffer to Uint32Array once vertex count exceeds 65535', () => {
+    const size = 257; // 257*257 = 66049 > 65535
+    const heightmap = new Float32Array(size * size).fill(0.5);
+    const mesh = buildMesh(heightmap, size);
+    expect(mesh.indices).toBeInstanceOf(Uint32Array);
+  });
+
+  it('keeps the index buffer as Uint16Array at or below 65535 vertices', () => {
+    const size = 255; // 255*255 = 65025 <= 65535
+    const heightmap = new Float32Array(size * size).fill(0.5);
+    const mesh = buildMesh(heightmap, size);
+    expect(mesh.indices).toBeInstanceOf(Uint16Array);
+  });
 });
