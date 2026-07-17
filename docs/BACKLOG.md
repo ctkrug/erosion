@@ -44,7 +44,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - The canvas renders at `devicePixelRatio × CSS size` and recomputes on
     window resize without stretching or blurring.
 
-- [ ] **2.2 Camera orbit/zoom controls**
+- [x] **2.2 Camera orbit/zoom controls**
   - Mouse drag orbits the camera around the terrain's center; scroll/pinch
     zooms in and out, bounded to a sane min/max distance.
   - Touch drag and pinch produce equivalent orbit/zoom behavior on a phone
