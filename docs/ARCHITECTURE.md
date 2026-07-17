@@ -112,9 +112,14 @@ relative-path `dist/` — no server-side component, servable from a subpath
 
 - Frame rate under active erosion at default droplet batch size is not yet
   formally measured/noted (story 2.4's "manually verified... in QA" clause) —
-  the per-frame mesh update path itself is built and reinitializes nothing.
+  the per-frame mesh update path itself is built and reinitializes nothing. A
+  Node microbenchmark of the CPU-bound path (`erodeStep` × 200 droplets +
+  `updateMeshHeights` on the 128×128 mesh) runs ~3-4ms/frame on this sandbox's
+  hardware, well inside the 33ms (30fps) budget, but that's a proxy, not the
+  real number: it excludes the GPU draw call and this sandbox has no display
+  to run an actual browser against, so the manual verification stays open.
 - No keyboard-driven camera orbit (mouse drag / wheel / touch drag / pinch
-  only); acceptable since the terrain view isn't the primary keyboard path,
-  but worth a look in QA's accessibility pass.
-- Landing polish (README screenshot exists; a final DESIGN.md-vs-shipped-UI
-  pass is still open — story 4.3).
+  only). All core functionality (every slider, the regenerate button, the
+  mute toggle) is fully keyboard-operable without it, so this is a
+  supplementary-interaction gap, not a blocked task — worth a look if a
+  future pass wants full keyboard parity with mouse/touch.
