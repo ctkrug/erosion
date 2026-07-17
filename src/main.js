@@ -6,6 +6,7 @@ import { TerrainRenderer } from './renderer.js';
 import { NOISE_CONTROLS, EROSION_CONTROLS, defaultParams } from './controls.js';
 import { createCameraState, orbitCamera, zoomCamera, cameraEye } from './camera.js';
 import { AudioEngine } from './audio.js';
+import { createConvergenceTracker, totalAbsoluteDelta } from './convergence.js';
 
 const RESOLUTION = 128;
 const HEIGHT_SCALE = 0.6;
@@ -60,6 +61,7 @@ const params = defaultParams();
 let heightmap = generateHeightmap(RESOLUTION, params);
 let mesh = buildMesh(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE });
 let erosionRng = createRng(params.seed);
+let convergenceTracker = createConvergenceTracker();
 
 let renderer;
 try {
@@ -103,6 +105,7 @@ function regenerateHeightmap() {
   heightmap = generateHeightmap(RESOLUTION, params);
   erosionRng = createRng(params.seed);
   mesh = buildMesh(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE });
+  convergenceTracker.reset();
   if (renderer) renderer.setMesh(mesh);
 }
 
@@ -121,8 +124,13 @@ function pulseBezel() {
 let wasEroding = false;
 function onStrengthChange(value) {
   const isEroding = value > 0;
-  statusEl.textContent = isEroding ? 'eroding…' : 'stable';
-  if (isEroding && !wasEroding) pulseBezel();
+  if (isEroding && !wasEroding) {
+    pulseBezel();
+    convergenceTracker.reset();
+    statusEl.textContent = 'eroding…';
+  } else if (!isEroding) {
+    statusEl.textContent = 'stable';
+  }
   wasEroding = isEroding;
 }
 
@@ -259,9 +267,12 @@ function frame(now) {
 
   if (renderer) {
     if (params.strength > 0) {
+      const before = heightmap.data.slice();
       for (let i = 0; i < params.strength; i++) {
         erodeStep(heightmap.data, RESOLUTION, erosionRng);
       }
+      const converged = convergenceTracker.update(totalAbsoluteDelta(before, heightmap.data));
+      statusEl.textContent = converged ? 'converged' : 'eroding…';
       updateMeshHeights(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE }, mesh.positions, mesh.normals);
       renderer.updateMesh(mesh);
       audioEngine.playTrickle(now);
