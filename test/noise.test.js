@@ -1,5 +1,20 @@
 import { describe, it, expect } from 'vitest';
-import { SimplexNoise2D, fbm } from '../src/noise.js';
+import { SimplexNoise2D, fbm, createRng } from '../src/noise.js';
+
+describe('createRng', () => {
+  it('falls back to a non-zero internal state for a zero seed', () => {
+    const rng = createRng(0);
+    const value = rng();
+    expect(Number.isFinite(value)).toBe(true);
+    expect(value).not.toBe(0);
+  });
+
+  it('is deterministic and matches a seed of 1 (0 | 0 is falsy, so it maps to the same state)', () => {
+    const fromZero = createRng(0);
+    const fromOne = createRng(1);
+    expect(fromZero()).toBe(fromOne());
+  });
+});
 
 describe('SimplexNoise2D', () => {
   it('is deterministic for a given seed', () => {
