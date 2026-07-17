@@ -48,18 +48,18 @@ void main() {
   float t = clamp((vHeight - uMinHeight) / range, 0.0, 1.0);
 
   vec3 elevationColor = uWaterColor;
-  elevationColor = mix(elevationColor, uGrassColor, smoothstep(0.05, 0.25, t));
-  elevationColor = mix(elevationColor, uRockColor, smoothstep(0.45, 0.7, t));
-  elevationColor = mix(elevationColor, uSnowColor, smoothstep(0.8, 0.95, t));
+  elevationColor = mix(elevationColor, uGrassColor, smoothstep(0.05, 0.28, t));
+  elevationColor = mix(elevationColor, uRockColor, smoothstep(0.38, 0.6, t));
+  elevationColor = mix(elevationColor, uSnowColor, smoothstep(0.78, 0.92, t));
 
   float slope = 1.0 - clamp(n.y, 0.0, 1.0);
-  vec3 baseColor = mix(elevationColor, uRockColor, smoothstep(0.35, 0.75, slope));
+  vec3 baseColor = mix(elevationColor, uRockColor, smoothstep(0.3, 0.65, slope));
 
   float diffuse = max(dot(n, normalize(uLightDir)), 0.0);
-  float ambient = 0.35;
-  vec3 lit = baseColor * (ambient + diffuse * 0.75);
+  float ambient = 0.5;
+  vec3 lit = baseColor * (ambient + diffuse * 0.42);
 
-  fragColor = vec4(lit, 1.0);
+  fragColor = vec4(clamp(lit, 0.0, 1.0), 1.0);
 }
 `;
 
@@ -92,7 +92,9 @@ function linkProgram(gl, vertexSource, fragmentSource) {
 
 export class TerrainRenderer {
   constructor(canvas) {
-    const gl = canvas.getContext('webgl2', { antialias: true });
+    // preserveDrawingBuffer keeps the buffer readable by screenshot/capture
+    // tools between frames — the perf cost is negligible at this scale.
+    const gl = canvas.getContext('webgl2', { antialias: true, preserveDrawingBuffer: true });
     if (!gl) throw new Error('WebGL2 is not available in this browser');
 
     this.canvas = canvas;
