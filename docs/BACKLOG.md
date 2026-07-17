@@ -5,7 +5,7 @@ acceptance criteria — build implements to them, QA attacks them.
 
 ## Epic 1 — Core erosion simulation (the wow moment)
 
-- [ ] **1.1 Live erosion carves the terrain (WOW MOMENT)**
+- [x] **1.1 Live erosion carves the terrain (WOW MOMENT)**
   - Dragging the erosion-strength slider from 0 to max on the default seed
     visibly changes the heightmap's silhouette within ~3 seconds.
   - Setting strength back to 0 halts further erosion (heightmap stops
@@ -14,7 +14,7 @@ acceptance criteria — build implements to them, QA attacks them.
     main thread beyond the default frame budget (~16ms) at default droplet
     count.
 
-- [ ] **1.2 Droplet hydraulic erosion simulation core**
+- [x] **1.2 Droplet hydraulic erosion simulation core**
   - `erodeStep(heightmap, params)` mutates the heightmap in place, tracing a
     droplet downhill via the local gradient and applying erosion/deposition.
   - Unit test confirms total heightmap mass (sum of all heights) stays within
@@ -24,13 +24,13 @@ acceptance criteria — build implements to them, QA attacks them.
     measurably deepen the bowl's local minimum and deposit sediment at the
     slope's run-out zone (covered by a unit test on both fixtures).
 
-- [ ] **1.3 Noise heightmap parameter controls**
+- [x] **1.3 Noise heightmap parameter controls**
   - Changing the seed regenerates a visibly different heightmap; the same
     seed with the same parameters always regenerates the identical map.
   - Octave/frequency/lacunarity/persistence sliders regenerate the heightmap
     live, without a page reload.
 
-- [ ] **1.4 Design polish — control console & viewport bezel**
+- [x] **1.4 Design polish — control console & viewport bezel**
   - Every slider and select has themed hover/focus-visible/active states
     matching `docs/DESIGN.md` tokens — no unstyled native widgets.
   - The viewport renders with the brass bezel + inset shadow treatment from
@@ -38,7 +38,7 @@ acceptance criteria — build implements to them, QA attacks them.
 
 ## Epic 2 — WebGL rendering
 
-- [ ] **2.1 WebGL2 mesh renderer for the heightmap**
+- [x] **2.1 WebGL2 mesh renderer for the heightmap**
   - The heightmap renders as a shaded 3D mesh with per-vertex normals (not a
     flat 2D texture preview).
   - The canvas renders at `devicePixelRatio × CSS size` and recomputes on
@@ -50,7 +50,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - Touch drag and pinch produce equivalent orbit/zoom behavior on a phone
     viewport.
 
-- [ ] **2.3 Elevation- and slope-based color ramp**
+- [x] **2.3 Elevation- and slope-based color ramp**
   - Low elevation renders in the water tone, mid elevation in rock/grass
     tones, high elevation in the snowcap tone, per `docs/DESIGN.md`.
   - Steep slopes get a visibly distinct rock tint compared to flat areas at
@@ -85,7 +85,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - The `AudioContext` is created lazily on first user gesture, and the app
     does not throw in environments without WebAudio (e.g. the test runner).
 
-- [ ] **3.4 Design polish — responsive composition pass**
+- [x] **3.4 Design polish — responsive composition pass**
   - No horizontal scroll or overlapping elements at 390px, 768px, or 1440px.
   - A custom favicon and wordmark match `docs/DESIGN.md`'s brass/slate
     direction — no default globe icon.
@@ -98,7 +98,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - The reset action's affordance uses the rust-red danger token from
     `docs/DESIGN.md`.
 
-- [ ] **4.2 Static build & subpath-hosting readiness**
+- [x] **4.2 Static build & subpath-hosting readiness**
   - `npm run build` outputs a single `dist/` directory whose `index.html`
     and asset references contain no leading-`/` (absolute) paths.
   - The built `dist/` output loads and renders correctly when served from a
