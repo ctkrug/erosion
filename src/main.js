@@ -14,9 +14,9 @@ function hexToRgb(hex) {
 }
 
 const COLORS = {
-  water: hexToRgb('#5fa3a3'),
-  grass: hexToRgb('#7fb069'),
-  rock: hexToRgb('#4c4335'),
+  water: hexToRgb('#4f8f8f'),
+  grass: hexToRgb('#6b7a48'),
+  rock: hexToRgb('#584a37'),
   snow: hexToRgb('#ede4d3'),
 };
 
