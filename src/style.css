@@ -107,7 +107,7 @@ body {
 
 @keyframes contour-pulse {
   0% {
-    border-color: rgba(201, 138, 63, 0.55);
+    border-color: var(--pulse-color, rgba(201, 138, 63, 0.55));
     opacity: 1;
     transform: scale(0.98);
   }
@@ -154,6 +154,11 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent-support);
+  transition: color 200ms var(--ease-out);
+}
+
+.status.converged {
+  color: var(--success);
 }
 
 .btn-icon {

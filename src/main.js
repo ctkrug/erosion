@@ -106,6 +106,7 @@ function regenerateHeightmap() {
   erosionRng = createRng(params.seed);
   mesh = buildMesh(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE });
   convergenceTracker.reset();
+  wasConverged = false;
   if (renderer) renderer.setMesh(mesh);
 }
 
@@ -113,22 +114,33 @@ function formatValue(spec, value) {
   return spec.unit ? `${value} ${spec.unit}` : `${value}`;
 }
 
-function pulseBezel() {
+const CONVERGED_PULSE_COLOR = 'rgba(127, 176, 105, 0.6)';
+
+// `color` overrides the pulse's peak border color (see the --pulse-color
+// custom property in style.css) — brass for erosion engaging, moss-green
+// for convergence — while both share the same ring animation.
+function pulseBezel(color) {
   if (!bezelRing) return;
   bezelRing.classList.remove('pulse');
+  if (color) bezelRing.style.setProperty('--pulse-color', color);
+  else bezelRing.style.removeProperty('--pulse-color');
   // Force a reflow so the animation restarts even mid-pulse.
   void bezelRing.offsetWidth;
   bezelRing.classList.add('pulse');
 }
 
 let wasEroding = false;
+let wasConverged = false;
 function onStrengthChange(value) {
   const isEroding = value > 0;
   if (isEroding && !wasEroding) {
     pulseBezel();
     convergenceTracker.reset();
+    wasConverged = false;
+    statusEl.classList.remove('converged');
     statusEl.textContent = 'eroding…';
   } else if (!isEroding) {
+    statusEl.classList.remove('converged');
     statusEl.textContent = 'stable';
   }
   wasEroding = isEroding;
@@ -193,6 +205,8 @@ regenerateButton.addEventListener('click', () => {
   params.seed = Math.floor(Math.random() * 9999) + 1;
   syncControlUI('seed');
   regenerateHeightmap();
+  audioEngine.ensureContext();
+  audioEngine.playReset();
 });
 
 window.addEventListener('resize', resize);
@@ -336,7 +350,13 @@ function frame(now) {
         erodeStep(heightmap.data, RESOLUTION, erosionRng);
       }
       const converged = convergenceTracker.update(totalAbsoluteDelta(before, heightmap.data));
+      if (converged && !wasConverged) {
+        pulseBezel(CONVERGED_PULSE_COLOR);
+        audioEngine.playConverged();
+      }
+      statusEl.classList.toggle('converged', converged);
       statusEl.textContent = converged ? 'converged' : 'eroding…';
+      wasConverged = converged;
       updateMeshHeights(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE }, mesh.positions, mesh.normals);
       renderer.updateMesh(mesh);
       audioEngine.playTrickle(now);
