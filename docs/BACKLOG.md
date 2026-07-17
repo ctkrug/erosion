@@ -104,7 +104,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - The built `dist/` output loads and renders correctly when served from a
     non-root subpath locally.
 
-- [ ] **4.3 Landing polish & README screenshot**
+- [x] **4.3 Landing polish & README screenshot**
   - `README.md` includes an actual screenshot or GIF of the live erosion
     effect in action.
   - `docs/DESIGN.md` is cross-checked against the shipped UI, with any
