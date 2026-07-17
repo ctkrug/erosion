@@ -5,6 +5,7 @@ import { buildMesh, updateMeshHeights } from './mesh.js';
 import { TerrainRenderer } from './renderer.js';
 import { NOISE_CONTROLS, EROSION_CONTROLS, defaultParams } from './controls.js';
 import { createCameraState, orbitCamera, zoomCamera, cameraEye } from './camera.js';
+import { AudioEngine } from './audio.js';
 
 const RESOLUTION = 128;
 const HEIGHT_SCALE = 0.6;
@@ -29,6 +30,31 @@ const viewportEl = document.getElementById('viewport');
 const canvas = document.getElementById('terrain');
 const statusEl = document.getElementById('status');
 const bezelRing = document.querySelector('.bezel-ring');
+const muteButton = document.getElementById('mute-toggle');
+const muteWaves = document.getElementById('mute-toggle-waves');
+const muteSlash = document.getElementById('mute-toggle-slash');
+
+const audioEngine = new AudioEngine();
+
+function syncMuteUI() {
+  muteButton.setAttribute('aria-pressed', String(audioEngine.muted));
+  muteButton.setAttribute('aria-label', audioEngine.muted ? 'Unmute sound' : 'Mute sound');
+  muteWaves.style.display = audioEngine.muted ? 'none' : '';
+  muteSlash.style.display = audioEngine.muted ? '' : 'none';
+}
+syncMuteUI();
+
+muteButton.addEventListener('click', () => {
+  audioEngine.ensureContext();
+  audioEngine.toggleMuted();
+  syncMuteUI();
+});
+
+// AudioContext must be constructed inside a real user-gesture handler for
+// browsers to allow audio output later (e.g. from the erosion loop, which
+// isn't itself a gesture); prime it on whichever gesture comes first.
+window.addEventListener('pointerdown', () => audioEngine.ensureContext(), { once: true });
+window.addEventListener('keydown', () => audioEngine.ensureContext(), { once: true });
 
 const params = defaultParams();
 let heightmap = generateHeightmap(RESOLUTION, params);
@@ -238,6 +264,7 @@ function frame(now) {
       }
       updateMeshHeights(heightmap.data, RESOLUTION, { heightScale: HEIGHT_SCALE }, mesh.positions, mesh.normals);
       renderer.updateMesh(mesh);
+      audioEngine.playTrickle(now);
     }
 
     const { min, max } = heightRange(heightmap.data);
