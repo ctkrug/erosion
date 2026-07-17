@@ -50,15 +50,18 @@ npm test         # vitest — noise, erosion, mesh, mat4, camera, audio, converg
 - A status readout that tracks the simulation's actual state — "stable,"
   "eroding…," or "converged" once the terrain settles — plus a contour-ring
   flourish that pulses from the viewport bezel when erosion engages.
-- Synthesized WebAudio SFX (a rate-throttled trickle tick during active
-  erosion) with a mute toggle that persists across reloads.
+- Synthesized WebAudio SFX — a rate-throttled trickle tick during active
+  erosion, a low thud on reset, and a rising two-note chime when the
+  terrain converges — with a mute toggle that persists across reloads.
 - The brass/slate control console from [`docs/DESIGN.md`](docs/DESIGN.md), with
   themed sliders and a drag-handle bottom sheet on phone.
 
 ## Not yet built
 
-- A cross-check pass of `docs/DESIGN.md` against the shipped UI for any
-  remaining discrepancies (story 4.3).
+- A manually-verified >30fps frame rate at the default droplet batch size on
+  a mid-tier laptop (story 2.4) — the per-frame mesh update path itself is
+  built and re-uploads only position/normal data, with no buffer or WebGL
+  context reinitialization.
 
 ## Stack
 
