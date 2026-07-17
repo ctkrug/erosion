@@ -85,6 +85,13 @@ describe('erodeStep', () => {
     }
   });
 
+  it('a droplet dies early from water depletion under a fast evaporation rate', () => {
+    const { data, size } = generateHeightmap(32, { seed: 2 });
+    const rng = createRng(1);
+    const steps = erodeStep(data, size, rng, { evaporateSpeed: 0.5, maxLifetime: 30 });
+    expect(steps).toBeLessThan(30);
+  });
+
   it('leaves a perfectly flat heightmap untouched (zero gradient, nowhere to flow)', () => {
     const size = 16;
     const flat = new Float32Array(size * size).fill(0.5);
