@@ -78,7 +78,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - `prefers-reduced-motion` disables the pulse animation while still
     updating the status text.
 
-- [ ] **3.3 Synth WebAudio SFX + mute toggle**
+- [x] **3.3 Synth WebAudio SFX + mute toggle**
   - A rate-throttled "trickle" tick sound fires during active erosion
     (not once per individual droplet).
   - The mute toggle's state persists to `localStorage` across reloads.
