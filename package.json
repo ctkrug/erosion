@@ -1,0 +1,24 @@
+{
+  "name": "erosion",
+  "version": "0.1.0",
+  "description": "Real-time procedural terrain sculptor with live hydraulic erosion, in WebGL.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Charlie Krug",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctkrug/erosion.git"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint src test"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.0",
+    "vite": "^5.4.0",
+    "vitest": "^2.0.5"
+  }
+}
