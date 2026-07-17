@@ -48,4 +48,9 @@ describe('mat4', () => {
     // The forward (view-space -Z) basis vector should be world -Z reversed into +Z lookAt convention.
     expect(view[10]).toBeCloseTo(1, 5);
   });
+
+  it('lookAt stays finite instead of NaN when eye and target coincide', () => {
+    const view = lookAt([0, 0, 0], [0, 0, 0], [0, 1, 0]);
+    for (const v of view) expect(Number.isFinite(v)).toBe(true);
+  });
 });
