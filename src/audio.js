@@ -74,6 +74,23 @@ export class AudioEngine {
     this.lastTrickleAt = now;
     synthTrickle(ctx);
   }
+
+  // A soft low thud for the reset/regenerate action — unthrottled, since
+  // it's tied directly to a single deliberate click.
+  playReset() {
+    if (this.muted) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+    synthReset(ctx);
+  }
+
+  // A gentle rising tone fired once when the simulation settles.
+  playConverged() {
+    if (this.muted) return;
+    const ctx = this.ensureContext();
+    if (!ctx) return;
+    synthConverged(ctx);
+  }
 }
 
 // A short descending sine blip with a fast attack/decay envelope, evoking a
@@ -91,4 +108,39 @@ function synthTrickle(ctx) {
   osc.connect(gain).connect(ctx.destination);
   osc.start(startAt);
   osc.stop(startAt + 0.12);
+}
+
+// A low sine thud with a quick decay — a single physical "clunk," not a tone.
+function synthReset(ctx) {
+  const startAt = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(140, startAt);
+  osc.frequency.exponentialRampToValueAtTime(70, startAt + 0.16);
+  gain.gain.setValueAtTime(0.0001, startAt);
+  gain.gain.exponentialRampToValueAtTime(0.09, startAt + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.2);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(startAt);
+  osc.stop(startAt + 0.22);
+}
+
+// A gentle two-note rise (a soft major third) signaling the terrain has
+// settled into a stable shape.
+function synthConverged(ctx) {
+  const startAt = ctx.currentTime;
+  [392, 494].forEach((frequency, index) => {
+    const noteAt = startAt + index * 0.09;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(frequency, noteAt);
+    gain.gain.setValueAtTime(0.0001, noteAt);
+    gain.gain.exponentialRampToValueAtTime(0.045, noteAt + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, noteAt + 0.35);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(noteAt);
+    osc.stop(noteAt + 0.37);
+  });
 }
