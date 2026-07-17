@@ -264,7 +264,11 @@ body {
 }
 
 .control-range:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(201, 138, 63, 0.5);
+  box-shadow: 0 0 0 4px rgba(237, 228, 211, 0.85);
+}
+
+.control-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgba(237, 228, 211, 0.85);
 }
 
 .control-range:focus-visible {
