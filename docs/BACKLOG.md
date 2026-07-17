@@ -70,7 +70,7 @@ acceptance criteria — build implements to them, QA attacks them.
   - The console collapses to the bottom-sheet drawer layout at 390px width
     per `docs/DESIGN.md`'s layout intent.
 
-- [ ] **3.2 Contour-ring signature flourish + status readout**
+- [x] **3.2 Contour-ring signature flourish + status readout**
   - The contour-ring pulse animates outward from the viewport bezel when
     erosion strength moves off zero.
   - A status label transitions between "stable," "eroding…," and "converged"
