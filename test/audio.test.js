@@ -70,8 +70,23 @@ function fakeAudioContextClass() {
 }
 
 describe('loadMutedPreference / saveMutedPreference', () => {
+  afterEach(() => {
+    delete globalThis.localStorage;
+  });
+
   it('defaults to unmuted when nothing has been saved', () => {
     expect(loadMutedPreference(fakeStorage())).toBe(false);
+  });
+
+  it('treats a throwing localStorage getter as unmuted without throwing', () => {
+    Object.defineProperty(globalThis, 'localStorage', {
+      get() {
+        throw new Error('access denied');
+      },
+      configurable: true,
+    });
+    expect(() => loadMutedPreference()).not.toThrow();
+    expect(loadMutedPreference()).toBe(false);
   });
 
   it('round-trips a saved muted preference', () => {
