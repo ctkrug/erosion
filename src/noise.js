@@ -11,6 +11,12 @@ function xorshift32(seed) {
   };
 }
 
+// Shared seeded PRNG for anything that needs reproducible randomness outside
+// the noise field itself (e.g. droplet spawn points in the erosion sim).
+export function createRng(seed) {
+  return xorshift32(seed);
+}
+
 function buildPermutation(seed) {
   const rand = xorshift32(seed);
   const p = new Uint8Array(256);
