@@ -89,6 +89,16 @@ describe('loadMutedPreference / saveMutedPreference', () => {
     expect(loadMutedPreference()).toBe(false);
   });
 
+  it('reads through to a real global localStorage by default', () => {
+    const backing = fakeStorage();
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: backing,
+      configurable: true,
+    });
+    backing.setItem('erosion:muted', '1');
+    expect(loadMutedPreference()).toBe(true);
+  });
+
   it('round-trips a saved muted preference', () => {
     const storage = fakeStorage();
     saveMutedPreference(true, storage);
