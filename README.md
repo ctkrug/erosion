@@ -1,76 +1,90 @@
 # Erosion
 
-A real-time procedural terrain sculptor. Layered Perlin/Simplex noise generates a
-heightmap; an actual hydraulic erosion simulation — thousands of simulated water
-droplets carrying and depositing sediment — carves it into valleys and ridgelines
-live, in WebGL, as you drag a slider.
+**▶ Live demo — [apps.charliekrug.com/erosion](https://apps.charliekrug.com/erosion/)**
+
+*Watch water carve terrain, live in your browser.*
+
+[![CI](https://github.com/ctkrug/erosion/actions/workflows/ci.yml/badge.svg)](https://github.com/ctkrug/erosion/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-c98a3f.svg)](LICENSE)
+
+A real-time procedural terrain generator. Layered simplex noise builds a
+heightmap, then an actual hydraulic erosion simulation (thousands of simulated
+water droplets carrying and depositing sediment) carves it into valleys and
+ridgelines live, in WebGL, as you drag a slider.
 
 ![Erosion carving a WebGL2 terrain mesh live](docs/screenshot.png)
 
-This isn't a noise-texture demo. The terrain you see genuinely erodes: droplets
+This is not a noise-texture demo. The terrain you see genuinely erodes: droplets
 spawn on the heightmap, flow downhill under a simplified physical model, pick up
-sediment where they accelerate, and deposit it where they slow down. Run enough
-of them and a bumpy random field turns into something that looks geologically real.
-
-## Why
-
-Most "terrain generator" demos on the web stop at layered noise — pretty, but
-static and obviously synthetic. Adding real erosion physics is what makes terrain
-look *carved* rather than *bumpy*, and doing it live (not as an offline bake) is
-what makes it satisfying to play with: drag the erosion-strength slider and watch
-rivers and ridges emerge in a couple of seconds.
+sediment where they accelerate, and drop it where they slow down. Run enough of
+them and a bumpy random field turns into something that looks geologically real.
 
 ## The wow moment
 
-Bump the erosion-strength slider from 0 to max on a freshly generated noise field
-and watch it visibly self-organize into river valleys and ridgelines within a
-couple of seconds — no page reload, no precomputed animation, just the simulation
-running live on the GPU/CPU in front of you.
+Push the erosion-strength slider from 0 toward its max on a freshly generated
+noise field and watch it self-organize into river valleys and ridgelines within
+a couple of seconds. No page reload, no precomputed animation, just the
+simulation running live in front of you.
 
-## Running it
+## Why it exists
+
+Most procedural-terrain demos on the web stop at layered noise: pretty, but
+static and obviously synthetic. Real terrain is not random. It is the residue of
+water moving downhill over a very long time. Adding erosion physics is what makes
+terrain look *carved* rather than *bumpy*, and doing it live (not as an offline
+bake) is what makes it worth touching: drag one slider and rivers and ridges
+appear.
+
+## What it does
+
+- **Live-tunable noise.** Seed, octaves, frequency, lacunarity, and persistence
+  are all sliders, and the heightmap regenerates the instant you move one.
+- **Real hydraulic erosion.** A droplet-based simulation (position, velocity,
+  water volume, sediment capacity, per-step deposition and erosion) runs every
+  animation frame the strength slider is above zero. Total heightmap mass is
+  conserved exactly, so the terrain redistributes rather than drifts.
+- **Raw WebGL2 rendering.** The heightmap draws as a shaded 3D mesh with
+  per-vertex normals and an elevation and slope color ramp (water, grass, rock,
+  snowcap), no three.js in the stack.
+- **Orbit and zoom.** Mouse-drag and one-finger touch orbit the camera; scroll
+  wheel and pinch zoom; a slow auto-rotate resumes after a couple of seconds of
+  no input.
+- **A status readout that means something.** It tracks the simulation's real
+  state ("stable", "eroding…", or "converged" once the terrain settles), with a
+  contour-ring flourish that pulses from the viewport bezel when erosion engages.
+- **Synthesized sound.** WebAudio-generated SFX (no audio files): a throttled
+  trickle during active erosion, a low thud on regenerate, and a rising chime
+  when the terrain converges, with a mute toggle that persists across reloads.
+
+## Run it locally
 
 ```
 npm install
 npm run dev      # local dev server
 npm run build    # static build in dist/, relative-path assets
-npm test         # vitest — noise, erosion, mesh, mat4, camera, audio, convergence, control specs
+npm test         # vitest: noise, erosion, mesh, mat4, camera, audio, convergence, controls
 ```
 
-## Built so far
-
-- Layered Perlin/Simplex noise heightmap generation (seed, octaves, frequency,
-  lacunarity, persistence all live-tunable).
-- Droplet-based hydraulic erosion simulation (position, velocity, water volume,
-  sediment capacity, deposition/erosion per step), driven live by the erosion-
-  strength slider — droplets run every animation frame the strength is above 0.
-- Real-time WebGL2 rendering of the heightmap as a shaded 3D mesh with per-vertex
-  normals and an elevation/slope color ramp (water, rock, snowcap).
-- Mouse-drag and touch-drag camera orbit, scroll-wheel and pinch zoom, with a
-  slow auto-rotate that resumes after a couple of seconds of no input.
-- A status readout that tracks the simulation's actual state — "stable,"
-  "eroding…," or "converged" once the terrain settles — plus a contour-ring
-  flourish that pulses from the viewport bezel when erosion engages.
-- Synthesized WebAudio SFX — a rate-throttled trickle tick during active
-  erosion, a low thud on reset, and a rising two-note chime when the
-  terrain converges — with a mute toggle that persists across reloads.
-- The brass/slate control console from [`docs/DESIGN.md`](docs/DESIGN.md), with
-  themed sliders and a drag-handle bottom sheet on phone.
-
-## Not yet built
-
-- A manually-verified >30fps frame rate at the default droplet batch size on
-  a mid-tier laptop (story 2.4) — the per-frame mesh update path itself is
-  built and re-uploads only position/normal data, with no buffer or WebGL
-  context reinitialization.
-
-## Stack
+## How it is built
 
 - Vanilla JavaScript (ES modules), no framework.
-- WebGL2 for rendering (raw GL, no three.js dependency) — keeps the erosion math
-  and the render loop both fully inspectable in one small codebase.
-- Vite for dev server + static build.
-- Vitest for unit tests (noise + erosion simulation logic is pure and testable
-  independent of the GPU).
+- WebGL2 for rendering, raw GL with no three.js dependency, so the erosion math
+  and the render loop are both fully inspectable in one small codebase.
+- Vite for the dev server and static build.
+- Vitest for unit tests. The noise and erosion logic is pure and testable
+  independent of the GPU, and the nine core modules are covered at 100% line and
+  branch.
 
-See [`docs/VISION.md`](docs/VISION.md) for the full design rationale and
-[`docs/BACKLOG.md`](docs/BACKLOG.md) for the build plan.
+See [`docs/VISION.md`](docs/VISION.md) for the full rationale,
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the code map, and
+[`docs/DESIGN.md`](docs/DESIGN.md) for the visual direction.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
+
+---
+
+More of Charlie's projects → [apps.charliekrug.com](https://apps.charliekrug.com)
+</content>
+</invoke>
