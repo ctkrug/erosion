@@ -32,7 +32,7 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-ui);
@@ -40,6 +40,7 @@ body {
 }
 
 #app {
+  position: relative;
   width: 100vw;
   height: 100vh;
   display: grid;
@@ -389,6 +390,144 @@ body {
   font-size: 16px;
 }
 
+/* ---------- About / SEO section (below the fold) ---------- */
+
+.about {
+  padding: var(--space-8) var(--space-3);
+  background:
+    radial-gradient(120% 80% at 80% 0%, rgba(95, 163, 163, 0.05), transparent 55%),
+    linear-gradient(180deg, var(--bg), #14181d);
+  border-top: 1px solid rgba(201, 138, 63, 0.18);
+}
+
+.about-inner {
+  max-width: 68ch;
+  margin: 0 auto;
+}
+
+.about h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 31px;
+  line-height: 1.15;
+  margin: 0 0 var(--space-3);
+}
+
+.about-lead {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.about-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-6) 0;
+}
+
+.about-card {
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  box-shadow:
+    inset 0 1px 0 rgba(201, 138, 63, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.about-card h3 {
+  margin: 0 0 var(--space-1);
+  font-size: 16px;
+  color: var(--accent);
+}
+
+.about-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.btn-cta {
+  display: inline-block;
+  min-height: 44px;
+  line-height: 44px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius);
+  border: 1px solid rgba(201, 138, 63, 0.5);
+  background: linear-gradient(160deg, #e0a75c, var(--accent));
+  color: #171b20;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: transform 150ms var(--ease-out), box-shadow 150ms var(--ease-out);
+}
+
+.btn-cta:hover {
+  box-shadow: 0 6px 20px rgba(201, 138, 63, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-cta:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.faq-heading {
+  margin-top: var(--space-8);
+}
+
+.faq {
+  margin: var(--space-3) 0 0;
+}
+
+.faq dt {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  margin-top: var(--space-3);
+}
+
+.faq dd {
+  margin: 6px 0 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(154, 163, 173, 0.15);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.site-footer-wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.site-footer a {
+  color: var(--accent-support);
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
@@ -404,10 +543,14 @@ body {
     min-height: 100%;
   }
 
+  .about-features {
+    grid-template-columns: 1fr;
+  }
+
   /* Bottom-sheet drawer: peeks at 132px, drag the handle (or tap it) to
      expand toward 70vh without leaving the terrain viewport. */
   .console {
-    position: fixed;
+    position: absolute;
     left: var(--space-2);
     right: var(--space-2);
     bottom: var(--space-2);
@@ -466,5 +609,13 @@ body {
   .console-body {
     padding: 0 var(--space-2) var(--space-2);
     gap: var(--space-3);
+  }
+
+  .about {
+    padding: var(--space-6) var(--space-2);
+  }
+
+  .about h2 {
+    font-size: 25px;
   }
 }

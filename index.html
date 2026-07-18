@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Erosion — live hydraulic terrain sculpting</title>
-  <meta name="description" content="A real-time procedural terrain sculptor: layered noise carved live by a hydraulic erosion simulation, rendered in WebGL." />
+  <title>Erosion — procedural terrain generator with live hydraulic erosion</title>
+  <meta name="description" content="A procedural terrain generator you watch erode: drag a slider and a hydraulic erosion simulation carves rivers and ridges into simplex noise, live in WebGL." />
+  <meta property="og:title" content="Erosion — procedural terrain generator with live hydraulic erosion" />
+  <meta property="og:description" content="Drag a slider and watch a hydraulic erosion simulation carve terrain out of noise, live in your browser." />
+  <meta property="og:type" content="website" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23171b20'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23c98a3f' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='12' fill='none' stroke='%23c98a3f' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23c98a3f'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -65,6 +68,102 @@
       </div>
     </aside>
   </div>
+
+  <section class="about" aria-labelledby="about-heading">
+    <div class="about-inner">
+      <h2 id="about-heading">A procedural terrain generator you can watch erode</h2>
+      <p class="about-lead">
+        Erosion is a procedural terrain generator that runs entirely in your
+        browser. It starts the way most terrain demos do, with layered simplex
+        noise, and then it keeps going: a hydraulic erosion simulation traces
+        thousands of water droplets down the slopes, each one picking up sediment
+        where it speeds up and dropping it where it slows down. Drag the erosion
+        slider and a field of random bumps reorganizes itself into river valleys
+        and ridgelines in a couple of seconds, live, with no bake step and no
+        page reload.
+      </p>
+
+      <div class="about-features">
+        <article class="about-card">
+          <h3>Noise you can steer</h3>
+          <p>
+            Seed, octaves, frequency, lacunarity, and persistence are all
+            sliders. Move one and the heightmap regenerates instantly, so you can
+            dial in the base landscape before a single droplet runs.
+          </p>
+        </article>
+        <article class="about-card">
+          <h3>Erosion that actually simulates</h3>
+          <p>
+            The droplet model tracks position, velocity, water volume, and
+            sediment load per step, and conserves total heightmap mass exactly.
+            The terrain redistributes rather than drifting or blowing up.
+          </p>
+        </article>
+        <article class="about-card">
+          <h3>Raw WebGL2, no framework</h3>
+          <p>
+            The mesh renders through hand-written WebGL2 with per-vertex normals
+            and an elevation-and-slope color ramp. No three.js, so the whole path
+            from heightmap to pixels stays small and readable.
+          </p>
+        </article>
+      </div>
+
+      <a class="btn btn-cta" href="https://github.com/ctkrug/erosion" target="_blank" rel="noopener">
+        View the code on GitHub
+      </a>
+
+      <h2 class="faq-heading">Questions</h2>
+      <dl class="faq">
+        <dt>Is this a free procedural terrain generator I can use online?</dt>
+        <dd>
+          Yes. It runs in the browser with no account, no install, and no upload.
+          The full source is MIT-licensed on GitHub if you want to run or fork it
+          yourself.
+        </dd>
+
+        <dt>How is this different from a Perlin noise terrain demo in WebGL?</dt>
+        <dd>
+          Most Perlin or simplex noise terrain demos stop at the noise: a static
+          heightmap with a color ramp. Erosion runs a live hydraulic erosion pass
+          on top of the noise, so you watch water carve the shapes instead of just
+          looking at randomness.
+        </dd>
+
+        <dt>Does it use Perlin noise?</dt>
+        <dd>
+          It uses simplex noise, Ken Perlin's faster follow-up to his original
+          Perlin noise algorithm. Both are gradient noise; simplex has fewer
+          directional artifacts, which matters once erosion starts following the
+          slopes.
+        </dd>
+
+        <dt>What is hydraulic erosion?</dt>
+        <dd>
+          It is the process of water reshaping land by carrying sediment downhill.
+          The simulation approximates it with many short-lived droplets: each
+          flows along the local gradient, erodes where the slope steepens its
+          flow, and deposits where the slope flattens.
+        </dd>
+
+        <dt>Does it work on a phone?</dt>
+        <dd>
+          Yes. Drag one finger to orbit, pinch to zoom, and pull up the bottom
+          sheet for the controls. It needs a browser with WebGL2, which every
+          current mobile browser supports.
+        </dd>
+      </dl>
+
+      <footer class="site-footer">
+        <span class="site-footer-wordmark">Ero<span class="wordmark-accent">sion</span></span>
+        <span class="site-footer-cross">
+          More by Charlie Krug → <a href="https://apps.charliekrug.com">apps.charliekrug.com</a>
+        </span>
+      </footer>
+    </div>
+  </section>
+
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>
