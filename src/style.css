@@ -161,10 +161,15 @@ body {
   color: var(--success);
 }
 
-.btn-icon {
+.viewport-actions {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
+  display: flex;
+  gap: var(--space-1);
+}
+
+.btn-icon {
   width: 44px;
   height: 44px;
   display: flex;
@@ -175,6 +180,7 @@ body {
   background: rgba(23, 27, 32, 0.55);
   backdrop-filter: blur(4px);
   color: var(--text);
+  text-decoration: none;
   cursor: pointer;
   transition: transform 150ms var(--ease-out), background 150ms var(--ease-out),
     border-color 150ms var(--ease-out);
